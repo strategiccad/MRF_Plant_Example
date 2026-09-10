@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MRF — 200 ft × 100 ft Sorting Line</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<style>
+  html, body { margin: 0; height: 100%; background: #eceae4; }
+  three-d-stage:not(:defined) { visibility: hidden; }
+  three-d-stage { display: block; width: 100vw; height: 100vh; }
+  #legend {
+    position: fixed; left: 18px; top: 18px; z-index: 5;
+    font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: #2a2723; background: rgba(255,255,255,.82);
+    border: 1px solid rgba(0,0,0,.14); border-radius: 4px;
+    padding: 12px 14px; max-width: 260px; backdrop-filter: blur(4px);
+  }
+  #legend h1 { font: 600 13px/1.4 ui-monospace, Menlo, monospace; margin: 0 0 2px; letter-spacing: .04em; text-transform: uppercase; }
+  #legend p { margin: 0 0 10px; color: #6b665e; }
+  #legend ol { margin: 0; padding-left: 18px; display: grid; gap: 2px; }
+  #legend li::marker { color: #a09a90; }
+  #legend .hint { margin: 10px 0 0; padding-top: 8px; border-top: 1px solid rgba(0,0,0,.12); color: #6b665e; }
+  #selection {
+    position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); z-index: 5;
+    display: none; align-items: center; gap: 10px;
+    font: 600 12px/1 ui-monospace, Menlo, monospace; letter-spacing: .12em; text-transform: uppercase;
+    color: #f4f2ee; background: rgba(22,24,26,.9); border: 1px solid rgba(255,255,255,.22);
+    border-radius: 999px; padding: 11px 18px; white-space: nowrap;
+  }
+  #selection.on { display: flex; }
+  #selection .dot { width: 8px; height: 8px; border-radius: 50%; background: #2bd1a0; box-shadow: 0 0 0 4px rgba(43,209,160,.22); }
+  #selection button {
+    all: unset; cursor: pointer; color: #9b978f; font: inherit; letter-spacing: .12em;
+    padding-left: 10px; border-left: 1px solid rgba(255,255,255,.2);
+  }
+  #selection button:hover { color: #f4f2ee; }
+</style>
+</head>
+<body>
+<div id="legend">
+  <h1>MRF Sorting Line</h1>
+  <p>200 ft × 100 ft building · 70 st/hr infeed</p>
+  <ol>
+    <li>Tipping floor + metering bin</li>
+    <li>Presort platform → residue / MRP / metal / wood bunkers</li>
+    <li>OCC screen → OCC QC platform → OCC bunker</li>
+    <li>DRS disc screen (2–8″ / 8–12″ / 2″ unders)</li>
+    <li>Polishing screen</li>
+    <li>Belt magnet + drum magnet (ferrous)</li>
+    <li>NRT SpydIR® → NRT w/ VIS</li>
+    <li>ECS (eddy current, non-ferrous)</li>
+    <li>Baler + residue take-away</li>
+  </ol>
+  <p class="hint">Click any machine to isolate it.</p>
+</div>
+<div id="selection"><span class="dot"></span><span id="selname"></span><button type="button" id="selclear">Clear</button></div>
+<script>
+  const selBar = document.getElementById('selection');
+  window.addEventListener('mrf-select', e => {
+    if (e.detail.id) {
+      document.getElementById('selname').textContent = e.detail.label;
+      selBar.classList.add('on');
+    } else selBar.classList.remove('on');
+  });
+  document.getElementById('selclear').addEventListener('click', () => window.dispatchEvent(new CustomEvent('mrf-clear')));
+</script>
+<three-d-stage name="mrf-plant" background="#eceae4"></three-d-stage>
+<script src="three-d-stage.js"></script>
+<script type="module" src="./mrf-model.js"></script>
+</body>
+</html>
